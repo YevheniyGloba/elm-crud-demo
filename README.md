@@ -5,4 +5,4 @@ After cloning repo:
     2. npm run init
 
 
-To run application: npm run client
+To run application: npm run dev
