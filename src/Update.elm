@@ -23,6 +23,9 @@ update msg model =
       in
         {model | personModel = personModel } ! [Cmd.map PersonMsg cmd]
 
+    UserMsg userMsg ->
+      model ! []
+
 locationChangeHandler : Model -> Location -> (Model, Cmd Msg)
 locationChangeHandler model location =
   let
