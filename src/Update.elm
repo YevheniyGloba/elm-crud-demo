@@ -6,6 +6,7 @@ import UrlParser exposing (..)
 import Model exposing (..)
 
 import Person.Update as PersonUpdate
+import User.Update as UserUpdate
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -24,7 +25,11 @@ update msg model =
         {model | personModel = personModel } ! [Cmd.map PersonMsg cmd]
 
     UserMsg userMsg ->
-      model ! []
+      let
+        (userModel, cmd) =
+          UserUpdate.update userMsg model.userModel
+      in
+        {model | userModel = userModel} ! [Cmd.map UserMsg cmd]
 
 locationChangeHandler : Model -> Location -> (Model, Cmd Msg)
 locationChangeHandler model location =
@@ -42,6 +47,14 @@ locationChangeHandler model location =
             route = newRoute,
             personModel = personModel
           } ! [Cmd.map PersonMsg personMsg]
+      UserRoute route ->
+        let (userModel, userMsg) =
+          UserUpdate.routeChangeHandler model.userModel route
+        in
+          {model |
+            route = newRoute,
+            userModel = userModel
+          } ! [Cmd.map UserMsg userMsg]
       _ ->
         {model | route = newRoute} ! []
 
