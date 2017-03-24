@@ -1,6 +1,7 @@
 module User.Model exposing (..)
 
 import UrlParser exposing (..)
+import Http
 
 -- Routing
 type Route
@@ -16,7 +17,8 @@ matchers =
 
 -- Msg
 type Msg
-  = MgsMgsMgs
+  = GetUserHandler (Result Http.Error User)
+  | UserListHandler (Result Http.Error (List User))
 
 -- Model
 

@@ -15,8 +15,20 @@ userView model route =
 
 userListView: Model -> Html Msg
 userListView model =
-  div [] [text "user list view"]
+  case model.userList of
+    Just userList ->
+      div [] (List.map userTableItem userList)
+    Nothing ->
+      div [] [text "Loading..."]
+
+userTableItem: User -> Html Msg
+userTableItem user =
+  div [] [text user.fullname]
 
 userReadView: Model -> Html Msg
 userReadView model =
-  div [] [text "user read view"]
+  case model.user of
+    Just user ->
+      div [] [text (toString user.fullname)]
+    Nothing ->
+      div [] [text "Loading..."]
