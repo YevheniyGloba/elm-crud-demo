@@ -5,6 +5,7 @@ import UrlParser exposing (..)
 import Bootstrap.Navbar as Navbar
 
 import Person.Model as PersonModel
+import User.Model as UserModel
 
 
 type Route
@@ -12,17 +13,19 @@ type Route
   | PersonRoute PersonModel.Route
   | ParamPage Int
   | NotFound
+  | UserRoute UserModel.Route
 
 type alias Model =
-  {
-    navbarState: Navbar.State,
-    route: Route,
-    personModel: PersonModel.Model
+  { navbarState: Navbar.State
+    , route: Route
+    , personModel: PersonModel.Model
+    , userModel: UserModel.Model
   }
 
 type Msg
   = OnLocationChange Location
   | PersonMsg PersonModel.Msg
+  | UserMsg UserModel.Msg
   | NavbarMsg Navbar.State
 
 
@@ -32,7 +35,7 @@ initModel route =
     (navbarState, navbarCmd) =
       Navbar.initialState NavbarMsg
   in
-    Model navbarState route PersonModel.initPersonModel ! [navbarCmd]
+    Model navbarState route PersonModel.initPersonModel UserModel.initUserModel ! [navbarCmd]
 
 
 matchers: Parser (Route -> a) a

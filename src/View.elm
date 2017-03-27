@@ -12,6 +12,7 @@ import Bootstrap.Navbar as Navbar
 import Model exposing (..)
 
 import Person.View as PersonView
+import User.View as UserView
 
 view : Model -> Html Msg
 view model =
@@ -29,6 +30,7 @@ navbar model =
     |> Navbar.items
       [ Navbar.itemLink [href "#persons"] [ text "persons"]
       , Navbar.itemLink [href "#asdf"] [ text "not found"]
+      , Navbar.itemLink [href "#users"] [ text "users"]
       ]
     |> Navbar.view model.navbarState
 
@@ -38,6 +40,7 @@ page model =
     Main -> mainPage model
     ParamPage i -> mainPage model
     PersonRoute route -> Html.map PersonMsg (PersonView.view model.personModel route)
+    UserRoute route -> Html.map UserMsg (UserView.view model.userModel route)
     NotFound -> notFound model
 
 footer : Model -> Html Msg

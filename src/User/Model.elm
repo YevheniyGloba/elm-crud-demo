@@ -3,47 +3,44 @@ module User.Model exposing (..)
 import UrlParser exposing (..)
 import Http
 
-type alias PersonId = Int
+type alias UserId = Int
 
-type alias Person =
+type alias User =
   {
-    name: String,
-    height: String,
-    mass: String
+    id: Int,
+    fullName: String,
+    email: String,
+    age: Int
   }
 
 type alias Model =
-  { personList: List Person
-  , personListPageId: Int
-  , person: Person
-  , editPersonMode: Bool
-  , saveMode: Bool
+  { userList: List User
+  , user: User
   }
 
 type Msg
-  = LoadPersonList Int
-  | HandlePersonList (Result Http.Error (List Person))
-  | LoadPerson Int
-  | HandlePerson (Result Http.Error Person )
-  | PersonEdit
+  = LoadUserList Int
+  | HandleUserList (Result Http.Error (List User))
+{-
+  | LoadUser Int
+  | HandleUser (Result Http.Error User )
+-}
 
 type Route
-  = PersonRoute PersonId
-  | PersonListRoute
+  = UserRoute UserId
+  | UserListRoute
 
+initUserModel : Model
+initUserModel =
+  Model [] initUser
 
-
-initPersonModel : Model
-initPersonModel =
-  Model [] 1 initPerson False False
-
-initPerson : Person
-initPerson =
-  Person "" "" ""
+initUser : User
+initUser =
+  User 0 "" "" 0
 
 matchers : Parser (Route -> a) a
 matchers =
   oneOf
-    [ UrlParser.map PersonListRoute (UrlParser.s "persons")
-    , UrlParser.map PersonRoute (UrlParser.s "person" </> UrlParser.int)
+    [ UrlParser.map UserListRoute (UrlParser.s "users")
+    , UrlParser.map UserRoute (UrlParser.s "user" </> UrlParser.int)
     ]
