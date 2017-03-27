@@ -1,4 +1,4 @@
-module Person.View exposing (..)
+module User.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -24,31 +24,50 @@ personView personId model =
   Grid.row []
     [ Grid.col [Col.xs12] [h1 [] [text ("Person " ++ toString personId)]]
     , Grid.col [Col.xs12] [personPaginator personId]
-    , Grid.col [Col.xs12] [personForm model.person]
+    , Grid.col [Col.xs12] [personForm model]
     ]
 
-personForm : Person -> Html Msg
-personForm person =
+personForm : Model -> Html Msg
+personForm model =
+  let
+    person = model.person
+  in
   Form.form []
   [ Form.row []
     [ Form.colLabel [Col.xs3] [text "Name"]
-    , Form.colLabel [Col.xs3] [text person.name]
+    , Form.colLabel [Col.xs3]
+        [p [hidden model.editPersonMode] [text person.name]
+        , input [hidden (not model.editPersonMode), value person.name, onInput (EditField "name")][]
+        ]
     ]
   , Form.row []
     [ Form.colLabel [Col.xs3] [text "Height"]
-    , Form.colLabel [Col.xs3] [text person.height]
+    , Form.colLabel [Col.xs3]
+        [ p [hidden model.editPersonMode][text person.height]
+        , input [hidden (not model.editPersonMode), defaultValue person.height][]
+        ]
     ]
   , Form.row []
     [ Form.colLabel [Col.xs3] [text "Mass"]
-    , Form.colLabel [Col.xs3] [text person.mass]
+    , Form.colLabel [Col.xs3]
+        [ p [hidden model.editPersonMode][text person.mass]
+        , input [hidden (not model.editPersonMode), defaultValue person.mass][]
+        ]
     ]
+  , Form.row []
+    [ Form.colLabel [Col.xs2] [button [class "btn btn-primary", onClick PersonEdit][text "Edit"]]
+    , Form.colLabel [Col.xs2] [button [class "btn btn-primary", hidden (not model.editPersonMode)][text "Save"]]
+    , Form.colLabel [Col.xs2] [button [class "btn btn-primary", hidden (not model.editPersonMode), onClick PersonEdit][text "Cancel"]]
+    ]
+  , Form.row []
+    [ Form.colLabel [Col.xs12] [text (toString model.person)]]
   ]
 
 personPaginator : PersonId -> Html Msg
 personPaginator personId =
   Grid.row []
-    [ Grid.col [Col.xs6] [a [class "btn btn-primary", href ("#person/" ++ toString (personId-1))] [text ("Person " ++ toString (personId-1))]]
-    , Grid.col [Col.xs6] [a [class "btn btn-primary", href ("#person/" ++ toString (personId+1))] [text ("Person " ++ toString (personId+1))]]
+    [ Grid.col [Col.xs4] [a [class "btn btn-primary", href ("#person/" ++ toString (personId-1))] [text ("Person " ++ toString (personId-1))]]
+    , Grid.col [Col.xs4] [a [class "btn btn-primary", href ("#person/" ++ toString (personId+1))] [text ("Person " ++ toString (personId+1))]]
     ]
 
 personRow : Int -> Person -> Table.Row Msg

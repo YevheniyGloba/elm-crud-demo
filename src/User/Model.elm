@@ -1,4 +1,4 @@
-module Person.Model exposing (..)
+module User.Model exposing (..)
 
 import UrlParser exposing (..)
 import Http
@@ -16,6 +16,8 @@ type alias Model =
   { personList: List Person
   , personListPageId: Int
   , person: Person
+  , editPersonMode: Bool
+  , saveMode: Bool
   }
 
 type Msg
@@ -23,6 +25,7 @@ type Msg
   | HandlePersonList (Result Http.Error (List Person))
   | LoadPerson Int
   | HandlePerson (Result Http.Error Person )
+  | PersonEdit
 
 type Route
   = PersonRoute PersonId
@@ -32,7 +35,7 @@ type Route
 
 initPersonModel : Model
 initPersonModel =
-  Model [] 1 initPerson
+  Model [] 1 initPerson False False
 
 initPerson : Person
 initPerson =

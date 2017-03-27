@@ -1,4 +1,4 @@
-module Person.Update exposing (..)
+module User.Update exposing (..)
 
 import Http
 import Json.Decode as Decode
@@ -17,8 +17,21 @@ update msg model =
     HandlePerson (Ok person) ->
       {model | person = person} ! []
 
+    PersonEdit ->
+      {model | editPersonMode = (not model.editPersonMode)} ! []
+
+    EditField fieldName val ->
+        {model | person = (updatePersonField model.person fieldName val)} ! []
+
     _ -> (model, Cmd.none)
 
+updatePersonField : Person -> String -> String -> Person
+updatePersonField person fieldName val =
+    case fieldName of
+        "name" -> {person | name = val}
+        "mass" -> {person | mass = val}
+        "height" -> {person | height = val}
+        _ -> person
 
 changeRouteHandler : Model -> Route -> (Model, Cmd Msg)
 changeRouteHandler model route =
@@ -56,3 +69,4 @@ personDecoder =
     (Decode.field "name" Decode.string)
     (Decode.field "height" Decode.string)
     (Decode.field "mass" Decode.string)
+
