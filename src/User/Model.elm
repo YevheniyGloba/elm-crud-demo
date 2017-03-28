@@ -86,7 +86,13 @@ initModel =
 validation: Form.Validate.Validation () User
 validation =
   Form.Validate.map4 User
-    (Form.Validate.field "id"  Form.Validate.int)
-    (Form.Validate.field "fullname"  Form.Validate.string)
-    (Form.Validate.field "email"  Form.Validate.email)
-    (Form.Validate.field "age"  Form.Validate.int)
+    (Form.Validate.field "id" (Form.Validate.int |> (Form.Validate.defaultValue 0)))
+    (Form.Validate.field "fullname" Form.Validate.string)
+    (Form.Validate.field "email" Form.Validate.email)
+    (Form.Validate.field "age" ageValidator)
+
+ageValidator: Form.Validate.Validation e Int
+ageValidator =
+  Form.Validate.int
+    |> Form.Validate.andThen (Form.Validate.minInt 0)
+    |> Form.Validate.andThen (Form.Validate.maxInt 100)

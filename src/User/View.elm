@@ -104,16 +104,40 @@ userCreateForm model =
     Html.map CreateFormMsg (submitRow model)
   ]
 
+getValidationRowOptions form field =
+  if (Form.isSubmitted form) then
+    if (not (field.liveError == Nothing)) then
+      [Form.rowDanger]
+    else
+      [Form.rowSuccess]
+  else
+    []
+
+errorFor form field =
+  if (Form.isSubmitted form) then
+    case field.liveError of
+      Just error ->
+        text (toString error)
+      Nothing ->
+        text ""
+  else
+    text ""
+
 fullnameRow: Model -> Html Form.Msg
 fullnameRow model =
   let
     fullname =
       Form.getFieldAsString "fullname" model.createUserForm
   in
-    Form.row [] [
+    Form.row (getValidationRowOptions model.createUserForm fullname) [
       Form.colLabel [Col.xs3] [text "fullname"],
       Form.col [Col.xs9] [
         Input.textInput fullname [class "form-control"]
+      ],
+
+      Form.col [Col.xs3] [],
+      Form.col [Col.xs9] [
+        Form.validationText [] [errorFor model.createUserForm fullname]
       ]
     ]
 
@@ -123,10 +147,15 @@ emailRow model =
     email =
       Form.getFieldAsString "email" model.createUserForm
   in
-    Form.row [] [
+    Form.row (getValidationRowOptions model.createUserForm email) [
       Form.colLabel [Col.xs3] [text "email"],
       Form.col [Col.xs9] [
         Input.textInput email [class "form-control"]
+      ],
+
+      Form.col [Col.xs3] [],
+      Form.col [Col.xs9] [
+        Form.validationText [] [errorFor model.createUserForm email]
       ]
     ]
 
@@ -136,10 +165,15 @@ ageRow model =
     age =
       Form.getFieldAsString "age" model.createUserForm
   in
-    Form.row [] [
+    Form.row (getValidationRowOptions model.createUserForm age) [
       Form.colLabel [Col.xs3] [text "age"],
       Form.col [Col.xs9] [
         Input.textInput age [class "form-control"]
+      ],
+
+      Form.col [Col.xs3] [],
+      Form.col [Col.xs9] [
+        Form.validationText [] [errorFor model.createUserForm age]
       ]
     ]
 
