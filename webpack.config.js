@@ -49,7 +49,7 @@ module.exports = {
 		stats: {colors: true},
     proxy: {
       '/api': {
-        target: 'http://localhost:4000/',
+        target: 'http://192.168.99.100:4000/',
         secure: false
       }
     }
