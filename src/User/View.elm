@@ -84,7 +84,31 @@ userRow index user =
 
 userListView : Model -> Html Msg
 userListView model =
-  Grid.row []
+  div []
+    [ Grid.row []
+        [ Grid.col [Col.xs12] [h1 [] [text "User list"]] ]
+      , Grid.row []
+        [ Grid.col [Col.xs12]
+          [ Button.button
+             [ Button.primary
+             , Button.attrs [onClick LoadUserList]
+             ]
+            [text "Load more"]
+          ]
+          ,  Grid.col
+            [Col.xs12]
+            [ text (toString model)]
+          ,  Grid.col
+            [Col.xs12]
+            [ text (toString model.user)]
+
+        ]
+
+      {-, Grid.row []
+          [ Grid.col [Col.xs12] [h1 [] [text (toString model.user)]] ]-}
+    ]
+
+ {- Grid.row []
     [ Grid.col [Col.xs12] [h1 [] [text "User list"]]
     , Grid.col [Col.xs12] [
         Table.table
@@ -103,4 +127,4 @@ userListView model =
 --          , Button.attrs [onClick (LoadUserList model.userListPageId)]
           ] [text "Load more"]
       ]
-    ]
+    ]-}

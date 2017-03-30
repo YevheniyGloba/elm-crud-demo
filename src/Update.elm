@@ -25,7 +25,12 @@ update msg model =
         {model | personModel = personModel } ! [Cmd.map PersonMsg cmd]
 
     UserMsg userMsg ->
-      (model, Cmd.none)
+      let
+        (userModel, cmd) =
+          UserUpdate.update userMsg model.userModel
+      in
+        {model | userModel = userModel } ! [Cmd.map UserMsg cmd]
+
 
 
 locationChangeHandler : Model -> Location -> (Model, Cmd Msg)
@@ -50,7 +55,7 @@ locationChangeHandler model location =
           (userModel, userMsg) =
             UserUpdate.changeRouteHandler model.userModel route
         in
-        ({model | route = newRoute}, Cmd.none)
+        ({model | route = newRoute, userModel = userModel}, Cmd.map UserMsg userMsg)
       _ ->
         {model | route = newRoute} ! []
 

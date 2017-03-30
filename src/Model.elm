@@ -44,5 +44,6 @@ matchers =
     [ UrlParser.map Main top
     , UrlParser.map ParamPage (UrlParser.s "param" </> UrlParser.int)
     , UrlParser.map PersonRoute PersonModel.matchers
+    , UrlParser.map UserRoute UserModel.matchers
     ]
 

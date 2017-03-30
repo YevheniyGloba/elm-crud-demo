@@ -19,7 +19,7 @@ type alias Model =
   }
 
 type Msg
-  = LoadUserList Int
+  = LoadUserList
   | HandleUserList (Result Http.Error (List User))
 {-
   | LoadUser Int
