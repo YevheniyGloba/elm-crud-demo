@@ -18,12 +18,13 @@ view model route =
       userView userId model
     UserListRoute ->
       userListView model
+    EditUserRoute id->
+      userEditForm model
 
 userView : UserId -> Model -> Html Msg
 userView userId model =
   Grid.row []
     [ Grid.col [Col.xs12] [h1 [] [text ("User " ++ toString userId)]]
-    , Grid.col [Col.xs12] [userPaginator userId]
     , Grid.col [Col.xs12] [userForm model]
     ]
 
@@ -34,41 +35,25 @@ userForm model =
   in
   Form.form []
   [ Form.row []
-    [ Form.colLabel [Col.xs3] [text "Name"]
+    [ Form.colLabel [Col.xs3] [text "Full name"]
     , Form.colLabel [Col.xs3]
         [p [] [text user.fullName]
---        , input [hidden (not model.editUserMode), value user.fullName, onInput (EditField "fullName")][]
         ]
     ]
   , Form.row []
-    [ Form.colLabel [Col.xs3] [text "Height"]
+    [ Form.colLabel [Col.xs3] [text "E-mail"]
     , Form.colLabel [Col.xs3]
         [ p [][text user.email]
---        , input [hidden (not model.editUserMode), defaultValue user.email][]
         ]
     ]
   , Form.row []
-    [ Form.colLabel [Col.xs3] [text "Mass"]
+    [ Form.colLabel [Col.xs3] [text "Age"]
     , Form.colLabel [Col.xs3]
-        [ p [][text (toString user.age)]
---        , input [hidden (not model.editUserMode), defaultValue user.age][]
+        [ p [style [("color", "red")]][text (toString user.age)]
         ]
     ]
- {- , Form.row []
-    [ Form.colLabel [Col.xs2] [button [class "btn btn-primary", onClick UserEdit][text "Edit"]]
-    , Form.colLabel [Col.xs2] [button [class "btn btn-primary", hidden (not model.editUserMode)][text "Save"]]
-    , Form.colLabel [Col.xs2] [button [class "btn btn-primary", hidden (not model.editUserMode), onClick UserEdit][text "Cancel"]]
-    ]-}
-  , Form.row []
-    [ Form.colLabel [Col.xs12] [text (toString model.user)]]
+  , a [class "btn btn-primary", href ("#/user/" ++ (toString user.id) ++ "/edit" )][text "Edit user details"]
   ]
-
-userPaginator : UserId -> Html Msg
-userPaginator userId =
-  Grid.row []
-    [ Grid.col [Col.xs4] [a [class "btn btn-primary", href ("#user/" ++ toString (userId-1))] [text ("User " ++ toString (userId-1))]]
-    , Grid.col [Col.xs4] [a [class "btn btn-primary", href ("#user/" ++ toString (userId+1))] [text ("User " ++ toString (userId+1))]]
-    ]
 
 userRow : Int -> User -> Table.Row Msg
 userRow index user =
@@ -77,7 +62,7 @@ userRow index user =
     , Table.td [] [text user.email]
     , Table.td [] [text (toString user.age)]
     , Table.td [] [
-        a [href ("#user/" ++ (toString (index+1))) ] [text "details"]
+        a [class "btn btn-primary", href ("#/user/" ++ (toString (index+1))) ] [text "Details"]
       ]
     ]
 
@@ -89,42 +74,63 @@ userListView model =
         [ Grid.col [Col.xs12] [h1 [] [text "User list"]] ]
       , Grid.row []
         [ Grid.col [Col.xs12]
-          [ Button.button
-             [ Button.primary
-             , Button.attrs [onClick LoadUserList]
-             ]
-            [text "Load more"]
+          [
+            Table.table
+              { options = [ Table.striped, Table.bordered ]
+              , thead = Table.simpleThead
+                        [ Table.th [] [text "Full name"]
+                        , Table.th [] [text "Email"]
+                        , Table.th [] [text "Age"]
+                        , Table.th [] []
+                        ]
+              , tbody = Table.tbody [] (List.indexedMap userRow model.userList)
+              }
           ]
-          ,  Grid.col
-            [Col.xs12]
-            [ text (toString model)]
+          , Grid.col [Col.xs12]
+            [ Button.button
+             [ Button.primary
+               , Button.attrs [onClick LoadUserList]
+               ]
+             [text "Load more"]
+            ]
           ,  Grid.col
             [Col.xs12]
             [ text (toString model.user)]
 
         ]
-
-      {-, Grid.row []
-          [ Grid.col [Col.xs12] [h1 [] [text (toString model.user)]] ]-}
     ]
 
- {- Grid.row []
-    [ Grid.col [Col.xs12] [h1 [] [text "User list"]]
-    , Grid.col [Col.xs12] [
-        Table.table
-        { options = [ Table.striped ]
-        , thead = Table.simpleThead
-                  [ Table.th [] [text "fullName"]
-                  , Table.th [] [text "email"]
-                  , Table.th [] [text "age"]
-                  ]
-        , tbody = Table.tbody [] (List.indexedMap userRow model.userList)
-        }
-      ]
-    , Grid.col [Col.xs12]
-      [ Button.button
+userEditForm : Model -> Html Msg
+userEditForm model =
+  let
+    user = model.user
+  in
+  div []
+    [ h1 [] [text "Edit user page"]
+    , Form.form []
+        [ Form.row []
+          [ Form.colLabel [Col.xs3] [text "Full name"]
+          , Form.colLabel [Col.xs3]
+              [input [defaultValue user.fullName, onInput HandleUserEdit] []
+              ]
+          ]
+        , Form.row []
+          [ Form.colLabel [Col.xs3] [text "E-mail"]
+          , Form.colLabel [Col.xs3]
+              [input [defaultValue user.email] []
+              ]
+          ]
+        , Form.row []
+          [ Form.colLabel [Col.xs3] [text "Age"]
+          , Form.colLabel [Col.xs3]
+              [input [defaultValue (toString user.age)] []
+              ]
+          ]
+        , Button.button
           [ Button.primary
---          , Button.attrs [onClick (LoadUserList model.userListPageId)]
-          ] [text "Load more"]
-      ]
-    ]-}
+            , Button.attrs [onClick (SubmitUserEdit user)]
+            ]
+          [text "Submit"]
+         ]
+
+    ]

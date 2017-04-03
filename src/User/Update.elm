@@ -1,21 +1,30 @@
 module User.Update exposing (..)
 
---import Http
---import Json.Decode as Decode
-
 import User.Model exposing (..)
---import User.Rest as Rest
-import Http
-import Json.Decode as Decode
+import User.Rest as Rest
+import Navigation
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     LoadUserList ->
-      ({model | user = User 2 "12" "12" 2}, getUserList)
+      (model, (Rest.getUser 1))
 
     HandleUserList (Ok userList) ->
       ({model | userList = (List.append model.userList userList)}, Cmd.none)
+
+    HandleUser (Ok user) ->
+      ({model | user = user}, Cmd.none)
+
+    HandleUserEdit str ->
+      let
+        user = model.user
+        newUser = {user | fullName = str}
+      in
+      ({model | user = newUser}, Rest.updateUser newUser)
+
+    SubmitUserEdit user ->
+      (model, Navigation.newUrl "#users")
 
     _ -> (model, Cmd.none)
 
@@ -23,26 +32,11 @@ changeRouteHandler : Model -> Route -> (Model, Cmd Msg)
 changeRouteHandler model route =
   case route of
     UserRoute personId ->
-      (model, Cmd.none)
+      (model, (Rest.getUser personId))
+
     UserListRoute ->
-      ({model | userList = []}, getUserList)
+      ({model | userList = []}, Rest.getUserList)
 
+    EditUserRoute id ->
+      (model, Cmd.none)
 
-getUserList : Cmd Msg
-getUserList =
-   let
-      url = "/api/users"
-    in
-      Http.send HandleUserList (Http.get url decodeUsers)
-
-decodeUsers : Decode.Decoder (List User)
-decodeUsers =
-  Decode.at ["data"] (Decode.list userDecoder)
-
-userDecoder : Decode.Decoder User
-userDecoder =
-  Decode.map4 User
-    (Decode.at ["id"] Decode.int)
-    (Decode.at ["fullname"] Decode.string)
-    (Decode.at ["email"] Decode.string)
-    (Decode.at ["age"] Decode.int)
