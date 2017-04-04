@@ -20,6 +20,8 @@ view model route =
       userListView model
     EditUserRoute id->
       userEditForm model
+    CreateUserRoute ->
+      createUserForm model
 
 userView : UserId -> Model -> Html Msg
 userView userId model =
@@ -62,7 +64,14 @@ userRow index user =
     , Table.td [] [text user.email]
     , Table.td [] [text (toString user.age)]
     , Table.td [] [
-        a [class "btn btn-primary", href ("#/user/" ++ (toString (index+1))) ] [text "Details"]
+        a [class "btn btn-primary", href ("#/user/" ++ (toString user.id)) ] [text "Details"]
+      ]
+    , Table.td [] [
+       Button.button
+        [ Button.primary
+          , Button.attrs [onClick (DeleteUser user)]
+          ]
+        [text "Delete"]
       ]
     ]
 
@@ -86,17 +95,20 @@ userListView model =
               , tbody = Table.tbody [] (List.indexedMap userRow model.userList)
               }
           ]
-          , Grid.col [Col.xs12]
+          , Grid.col [Col.xs3]
             [ Button.button
              [ Button.primary
                , Button.attrs [onClick LoadUserList]
                ]
              [text "Load more"]
             ]
-          ,  Grid.col
-            [Col.xs12]
-            [ text (toString model.user)]
-
+          , Grid.col [Col.xs3]
+            [ Button.button
+             [ Button.primary
+               , Button.attrs [onClick CreateUser]
+               ]
+             [text "Create new user"]
+            ]
         ]
     ]
 
@@ -111,19 +123,19 @@ userEditForm model =
         [ Form.row []
           [ Form.colLabel [Col.xs3] [text "Full name"]
           , Form.colLabel [Col.xs3]
-              [input [defaultValue user.fullName, onInput HandleUserEdit] []
+              [input [defaultValue user.fullName, onInput HandleUserFullName] []
               ]
           ]
         , Form.row []
           [ Form.colLabel [Col.xs3] [text "E-mail"]
           , Form.colLabel [Col.xs3]
-              [input [defaultValue user.email] []
+              [input [defaultValue user.email, onInput HandleUserEmail] []
               ]
           ]
         , Form.row []
           [ Form.colLabel [Col.xs3] [text "Age"]
           , Form.colLabel [Col.xs3]
-              [input [defaultValue (toString user.age)] []
+              [input [defaultValue (toString user.age), onInput HandleUserAge] []
               ]
           ]
         , Button.button
@@ -132,5 +144,38 @@ userEditForm model =
             ]
           [text "Submit"]
          ]
+    ]
 
+createUserForm : Model -> Html Msg
+createUserForm model =
+  let
+    user = model.user
+  in
+  div []
+    [ h1 [] [text "Create user page"]
+    , Form.form []
+        [ Form.row []
+          [ Form.colLabel [Col.xs3] [text "Full name"]
+          , Form.colLabel [Col.xs3]
+              [input [defaultValue user.fullName, onInput HandleUserFullName] []
+              ]
+          ]
+        , Form.row []
+          [ Form.colLabel [Col.xs3] [text "E-mail"]
+          , Form.colLabel [Col.xs3]
+              [input [defaultValue user.email, onInput HandleUserEmail] []
+              ]
+          ]
+        , Form.row []
+          [ Form.colLabel [Col.xs3] [text "Age"]
+          , Form.colLabel [Col.xs3]
+              [input [defaultValue (toString user.age), onInput HandleUserAge] []
+              ]
+          ]
+        , Button.button
+          [ Button.primary
+            , Button.attrs [onClick (SubmitUserCreate user)]
+            ]
+          [text "Submit"]
+         ]
     ]

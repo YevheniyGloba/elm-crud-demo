@@ -20,21 +20,26 @@ type alias Model =
 
 type Msg
   = LoadUserList
+  | CreateUser
   | HandleUserList (Result Http.Error (List User))
   | HandleUser (Result Http.Error User )
   | HandleUserUpdate (Result Http.Error ())
+  | HandleUserDelete (Result Http.Error ())
+  | HandleUserCreate (Result Http.Error ())
   | EditUser User
-  | HandleUserEdit String
   | SubmitUserEdit User
-{-
-  | LoadUser Int
-  | HandleUser (Result Http.Error User )
--}
+  | SubmitUserCreate User
+  | HandleUserFullName String
+  | HandleUserEmail String
+  | HandleUserAge String
+  | DeleteUser User
+
 
 type Route
   = UserRoute UserId
   | UserListRoute
   | EditUserRoute Int
+  | CreateUserRoute
 
 initUserModel : Model
 initUserModel =
@@ -50,6 +55,7 @@ matchers =
     [ UrlParser.map UserListRoute (UrlParser.s "users")
     , UrlParser.map UserRoute (UrlParser.s "user" </> UrlParser.int)
     , UrlParser.map EditUserRoute (UrlParser.s "user" </> UrlParser.int </> UrlParser.s "edit")
+    , UrlParser.map CreateUserRoute (UrlParser.s "users" </> UrlParser.s "create")
     ]
 
 

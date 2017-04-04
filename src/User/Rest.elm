@@ -23,8 +23,77 @@ updateUser : User -> Cmd Msg
 updateUser user =
   let
     url = "/api/users/" ++ (toString user.id)
+    body = jsonUserBody user
   in
-    Http.send HandleUserUpdate (put url (jsonUserBody user))
+    Http.send HandleUserUpdate (put url body)
+
+createUser : User -> Cmd Msg
+createUser user =
+  let
+    url = "/api/users/"
+    body = jsonUserBody user
+  in
+    Http.send HandleUserCreate (post url body)
+
+deleteUser : User -> Cmd Msg
+deleteUser user =
+  let
+    url = "/api/users/" ++ (toString user.id)
+  in
+    Http.send HandleUserDelete (delete url Http.emptyBody)
+
+
+put : String -> Http.Body -> Http.Request ()
+put url body =
+  Http.request
+    { method = "PUT"
+    , headers = []
+    , url = url
+    , body = body
+    , expect = Http.expectStringResponse (\_ -> Ok ())
+    , timeout = Nothing
+    , withCredentials = False
+    }
+
+delete : String -> Http.Body -> Http.Request ()
+delete url body =
+  Http.request
+    { method = "DELETE"
+    , headers = []
+    , url = url
+    , body = body
+    , expect = Http.expectStringResponse (\_ -> Ok ())
+    , timeout = Nothing
+    , withCredentials = False
+    }
+
+post : String -> Http.Body -> Http.Request ()
+post url body =
+  Http.request
+    { method = "POST"
+    , headers = []
+    , url = url
+    , body = body
+    , expect = Http.expectStringResponse (\_ -> Ok ())
+    , timeout = Nothing
+    , withCredentials = False
+    }
+
+jsonUserBody : User -> Http.Body
+jsonUserBody user =
+  let
+    encodedUser = encodeUser user
+    stringifiedUser = Encode.encode 0 (Encode.object [ ("user", encodedUser)])
+  in
+  Http.stringBody "application/json" (stringifiedUser)
+
+encodeUser : User -> Encode.Value
+encodeUser user =
+  Encode.object [("id", Encode.int user.id)
+                , ("fullname", Encode.string user.fullName)
+                , ("email", Encode.string user.email)
+                , ("age", Encode.int user.age)
+                ]
 
 decodeUsers : Decode.Decoder (List User)
 decodeUsers =
@@ -41,29 +110,3 @@ userDecoder =
     (Decode.at ["fullname"] Decode.string)
     (Decode.at ["email"] Decode.string)
     (Decode.at ["age"] Decode.int)
-
-
-put : String -> Http.Body -> Http.Request ()
-put url body =
-  Http.request
-    { method = "PUT"
-    , headers = []
-    , url = url
-    , body = body
-    , expect = Http.expectStringResponse (\_ -> Ok ())
-    , timeout = Nothing
-    , withCredentials = False
-    }
-
-jsonUserBody : User -> Http.Body
-jsonUserBody user =
-   Http.stringBody "application/json" (encodeUser user)
-
-encodeUser : User -> String
-encodeUser user =
-  Encode.encode 0 (Encode.object [ ("user", Encode.object  [("id", Encode.int user.id)
-                                  , ("fullname", Encode.string user.fullName)
-                                  , ("email", Encode.string user.email)
-                                  , ("age", Encode.int user.age)
-                                  ])
-                                 ])

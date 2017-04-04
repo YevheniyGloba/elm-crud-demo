@@ -8,7 +8,7 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     LoadUserList ->
-      (model, (Rest.getUser 1))
+      (model, Cmd.none)
 
     HandleUserList (Ok userList) ->
       ({model | userList = (List.append model.userList userList)}, Cmd.none)
@@ -16,15 +16,47 @@ update msg model =
     HandleUser (Ok user) ->
       ({model | user = user}, Cmd.none)
 
-    HandleUserEdit str ->
+    HandleUserFullName str ->
       let
         user = model.user
         newUser = {user | fullName = str}
       in
-      ({model | user = newUser}, Rest.updateUser newUser)
+      ({model | user = newUser}, Cmd.none)
+
+    HandleUserEmail str ->
+          let
+            user = model.user
+            newUser = {user | email = str}
+          in
+          ({model | user = newUser}, Cmd.none)
+
+    HandleUserAge str ->
+          let
+            user = model.user
+            newUser = {user | age = Result.withDefault 0 (String.toInt str)}
+          in
+          ({model | user = newUser}, Cmd.none)
 
     SubmitUserEdit user ->
-      (model, Navigation.newUrl "#users")
+      (model, Rest.updateUser user)
+
+    SubmitUserCreate user ->
+      (model, Rest.createUser user)
+
+    CreateUser ->
+      (model, Navigation.newUrl "#/users/create")
+
+    DeleteUser user ->
+      (model, Rest.deleteUser user)
+
+    HandleUserDelete (Ok ()) ->
+      (model, Navigation.newUrl "#/users/")
+
+    HandleUserCreate (Ok ()) ->
+      (model, Navigation.newUrl "#/users/")
+
+    HandleUserUpdate (Ok ()) ->
+          (model, Navigation.newUrl "#/users/")
 
     _ -> (model, Cmd.none)
 
@@ -38,5 +70,8 @@ changeRouteHandler model route =
       ({model | userList = []}, Rest.getUserList)
 
     EditUserRoute id ->
-      (model, Cmd.none)
+      (model, (Rest.getUser id))
+
+    CreateUserRoute ->
+      ({model | user = initUser}, Cmd.none)
 
