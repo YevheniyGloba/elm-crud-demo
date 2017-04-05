@@ -5,8 +5,8 @@ import User.Model exposing (..)
 import Json.Decode as Decode
 import Json.Encode as Encode
 
-getUserList : Cmd Msg
-getUserList =
+getList : Cmd Msg
+getList =
    let
       url = "/api/users"
     in

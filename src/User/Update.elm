@@ -16,21 +16,21 @@ update msg model =
     HandleUser (Ok user) ->
       ({model | user = user}, Cmd.none)
 
-    HandleUserFullName str ->
+    HandleFullNameInput str ->
       let
         user = model.user
         newUser = {user | fullName = str}
       in
       ({model | user = newUser}, Cmd.none)
 
-    HandleUserEmail str ->
+    HandleEmailInput str ->
           let
             user = model.user
             newUser = {user | email = str}
           in
           ({model | user = newUser}, Cmd.none)
 
-    HandleUserAge str ->
+    HandleAgeInput str ->
           let
             user = model.user
             newUser = {user | age = Result.withDefault 0 (String.toInt str)}
@@ -67,7 +67,7 @@ changeRouteHandler model route =
       (model, (Rest.getUser personId))
 
     UserListRoute ->
-      ({model | userList = []}, Rest.getUserList)
+      ({model | userList = []}, Rest.getList)
 
     EditUserRoute id ->
       (model, (Rest.getUser id))

@@ -20,19 +20,19 @@ type alias Model =
 
 type Msg
   = LoadUserList
-  | CreateUser
   | HandleUserList (Result Http.Error (List User))
   | HandleUser (Result Http.Error User )
   | HandleUserUpdate (Result Http.Error ())
   | HandleUserDelete (Result Http.Error ())
   | HandleUserCreate (Result Http.Error ())
-  | EditUser User
   | SubmitUserEdit User
   | SubmitUserCreate User
-  | HandleUserFullName String
-  | HandleUserEmail String
-  | HandleUserAge String
+  | HandleFullNameInput String
+  | HandleEmailInput String
+  | HandleAgeInput String
   | DeleteUser User
+  | CreateUser
+  | UpdateUser User
 
 
 type Route
