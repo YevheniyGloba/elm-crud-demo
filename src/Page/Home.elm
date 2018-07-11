@@ -7,8 +7,7 @@ import Html exposing (..)
 import Html.Attributes exposing (attribute, class, classList, href, id, placeholder)
 import Html.Events exposing (onClick)
 import Http
-import Request.Person
-import SelectList exposing (SelectList)
+import Page.Errored exposing (PageLoadError, pageLoadError)
 import Task exposing (Task)
 import Views.Page as Page
 
@@ -17,22 +16,18 @@ import Views.Page as Page
 
 
 type alias Model =
-    { person : Person.Model
+    { homeText : String
     }
 
 
-init : Session -> Task PageLoadError Model
-init session =
+init : Task PageLoadError Model
+init =
     let
-
-        loadSources =
-            Person.init
-
         handleLoadError _ =
             pageLoadError Page.Home "Homepage is currently unavailable."
     in
-    Task.map Model loadSources
-        |> Task.mapError handleLoadError
+        Task.succeed (Model "Your first elm project")
+            |> Task.mapError handleLoadError
 
 
 
@@ -42,14 +37,11 @@ init session =
 view : Model -> Html Msg
 view model =
     div [ class "home-page" ]
-        [ viewBanner
-        , div [ class "container page" ]
+        [ div [ class "container page" ]
             [ div [ class "row" ]
-                [ div [ class "col-md-9" ] (viewFeed model.feed)
-                , div [ class "col-md-3" ]
+                [ div [ class "col-md-3" ]
                     [ div [ class "sidebar" ]
                         [ p [] [ text "Popular Tags" ]
-                        , viewTags model.tags
                         ]
                     ]
                 ]
@@ -57,38 +49,16 @@ view model =
         ]
 
 
-viewBanner : Html msg
-viewBanner =
-    div [ class "banner" ]
-        [ div [ class "container" ]
-            [ h1 [ class "logo-font" ] [ text "conduit" ]
-            , p [] [ text "A place to share your knowledge." ]
-            ]
-        ]
-
-
-viewFeed : Feed.Model -> List (Html Msg)
-viewFeed feed =
-    div [ class "feed-toggle" ]
-        [ Feed.viewFeedSources feed |> Html.map FeedMsg ]
-        :: (Feed.viewArticles feed |> List.map (Html.map FeedMsg))
-
-
 
 -- UPDATE --
 
 
 type Msg
-    = FeedMsg Feed.Msg
+    = SomeMessage
 
 
-update :  Msg -> Model -> ( Model, Cmd Msg )
-update  msg model =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
-        FeedMsg subMsg ->
-            let
-                ( newFeed, subCmd ) =
-                    Feed.update session subMsg model.feed
-            in
-            { model | feed = newFeed } => Cmd.map FeedMsg subCmd
-
+        SomeMessage ->
+            ( model, Cmd.none )

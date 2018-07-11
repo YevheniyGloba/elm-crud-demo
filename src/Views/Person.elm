@@ -1,7 +1,4 @@
-module Views.Person exposing (view, viewTimestamp)
-
-{-| Viewing a preview of an individual person, excluding its body.
--}
+module Views.Person exposing (view)
 
 import Data.Person exposing (Person)
 import Date.Format
@@ -13,32 +10,12 @@ import Route exposing (Route)
 -- VIEWS --
 
 
-{-| Some pages want to view just the timestamp, not the whole person.
--}
-viewTimestamp : Person a -> Html msg
-viewTimestamp person =
-    span [ class "date" ] [ text (formattedTimestamp person) ]
-
-
-view : (Person a -> msg) -> Person a -> Html msg
+view : (Person -> msg) -> Person -> Html msg
 view toggleFavorite person =
-    let
-        author =
-            person.author
-    in
     div [ class "person-preview" ]
-        [ a [ class "preview-link", Route.href (Route.Person person.slug) ]
-            [ h1 [] [ text person.title ]
-            , p [] [ text person.description ]
+        [ a [ class "preview-link", Route.href (Route.Person "1") ]
+            [ h1 [] [ text person.name ]
+            , p [] [ text person.mass ]
             , span [] [ text "Read more..." ]
             ]
         ]
-
-
-
--- INTERNAL --
-
-
-formattedTimestamp : Person a -> String
-formattedTimestamp person =
-    Date.Format.format "%B %e, %Y" person.createdAt

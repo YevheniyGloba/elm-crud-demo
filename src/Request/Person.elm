@@ -1,44 +1,30 @@
 module Request.Person
     exposing
-        ( FeedConfig
-        , ListConfig
-        , create
-        , defaultFeedConfig
-        , defaultListConfig
-        , delete
-        , feed
-        , get
-        , list
-        , tags
-        , toggleFavorite
-        , update
+        ( get
         )
 
-import Data.Person as Person exposing (Person, Body, Tag)
+import Data.Person as Person exposing (Person)
 import Http
 import HttpBuilder exposing (RequestBuilder, withBody, withExpect, withQueryParams)
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Page.Errored exposing (PageLoadError)
 import Request.Helpers exposing (apiUrl)
+import Task exposing (Task)
 
 
 -- SINGLE --
 
 
-get :  String -> Http.Request (Person Body)
-get slug =
+get : String -> Task Http.Error Person
+get id =
     let
         expect =
-            Person.decoderWithBody
-                |> Decode.field "person"
+            Person.decoder
                 |> Http.expectJson
     in
-    apiUrl ("/persons/" ++ Person.slugToString slug)
-        |> HttpBuilder.get
-        |> HttpBuilder.withExpect expect
-        |> withAuthorization maybeToken
-        |> HttpBuilder.toRequest
-
-
-
-
+        apiUrl ("/people/" ++ id)
+            |> HttpBuilder.get
+            |> HttpBuilder.withExpect expect
+            |> HttpBuilder.toRequest
+            |> Http.toTask

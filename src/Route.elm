@@ -19,7 +19,7 @@ route : Parser (Route -> a) a
 route =
     oneOf
         [ Url.map Home (s "")
-        , Url.map Person (s "person" </> "string")
+        , Url.map Person (s "person" </> string)
         ]
 
 
@@ -37,10 +37,8 @@ routeToString page =
 
                 Person id ->
                     [ "person", id ]
-
-
     in
-    "#/" ++ String.join "/" pieces
+        "#/" ++ String.join "/" pieces
 
 
 
